@@ -1,1 +1,19 @@
-npx --no -- commitlint --edit $1
+#!/usr/bin/env bash
+
+MSG_FILE="$1"
+MSG=$(cat "$MSG_FILE")
+
+# Rule 1: no capital letters anywhere
+if echo "$MSG" | grep -q '[A-Z]'; then
+  echo "error: commit messages must not contain uppercase letters"
+  exit 1
+fi
+
+# Rule 2: must not end with a period
+if echo "$MSG" | grep -q '\.$'; then
+  echo "error: commit message must not end with a period"
+  exit 1
+fi
+
+# Run commitlint
+npx --no -- commitlint --edit "$MSG_FILE"
