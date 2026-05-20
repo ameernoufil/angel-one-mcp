@@ -1,6 +1,6 @@
 {
   "name": "angel-one-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Angel One SmartAPI MCP server for LLM clients",
   "type": "module",
   "bin": {
