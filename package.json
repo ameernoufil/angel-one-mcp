@@ -1,0 +1,72 @@
+{
+  "name": "angel-one-mcp",
+  "version": "1.0.0",
+  "description": "Angel One SmartAPI MCP server for LLM clients",
+  "type": "module",
+  "bin": {
+    "angel-one-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "start": "node build/index.js",
+    "dev": "tsc --watch & tsc-alias --watch",
+    "lint": "eslint src/",
+    "lint:fix": "eslint --fix src/",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepare": "husky"
+  },
+  "files": [
+    "build"
+  ],
+  "keywords": [
+    "mcp-server",
+    "angel-one",
+    "angelone",
+    "angel-broking",
+    "smartapi",
+    "model-context-protocol"
+  ],
+  "author": "Mohamed Ameer Noufil N (https://ameernoufil.in)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "homepage": "https://github.com/ameernoufil/angel-one-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ameernoufil/angel-one-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ameernoufil/angel-one-mcp/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "dotenv": "17.4.2",
+    "otpauth": "9.5.1",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.1",
+    "@commitlint/config-conventional": "^21.0.1",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.7.0",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-no-relative-import-paths": "^1.6.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.4",
+    "prettier": "^3.8.3",
+    "tsc-alias": "^1.8.17",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.3"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
+  }
+}
