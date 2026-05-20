@@ -43,6 +43,48 @@ npm start        # Run MCP server (stdio)
 npm run dev      # Watch mode
 ```
 
+## Using via npx (Recommended)
+
+Install and run directly from npm without cloning:
+
+```bash
+npx -y angel-one-mcp
+```
+
+Or add to your MCP client config (Claude Desktop, Claude Code, etc.):
+
+```json
+{
+  "mcpServers": {
+    "angel-one": {
+      "command": "npx",
+      "args": ["-y", "angel-one-mcp"],
+      "env": {
+        "ANGEL_API_KEY": "your_key",
+        "ANGEL_CLIENT_ID": "your_id",
+        "ANGEL_PASSWORD": "your_password",
+        "ANGEL_TOTP_SECRET": "your_secret"
+      }
+    }
+  }
+}
+```
+
+Environment variables are required in `.env` or process environment.
+
+## Publishing
+
+Publishing is automated via GitHub Actions with npm Trusted Publishing (OIDC). Push a SemVer tag to trigger:
+
+```bash
+git tag v1.0.5
+git push origin v1.0.5
+```
+
+No manual `npm publish` or `NPM_TOKEN` needed.
+
+See `.github/workflows/publish.yml` for workflow details.
+
 ## Environment Variables
 
 Required in `.env` or process environment:
