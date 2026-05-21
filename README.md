@@ -2,56 +2,28 @@
 
 [![npm](https://img.shields.io/npm/v/angel-one-mcp)](https://www.npmjs.com/package/angel-one-mcp)
 
-A [Model Context Protocol](https://modelcontextprotocol.io) server that exposes [Angel One SmartAPI](https://smartapi.angelone.in/) as tools for LLM clients like Claude Desktop, Claude Code, and other MCP-compatible apps.
+TypeScript [Model Context Protocol](https://modelcontextprotocol.io) server for [Angel One SmartAPI](https://smartapi.angelone.in/).
 
-Trade stocks, track portfolios, analyze markets, and manage orders — all through natural language.
+Use it from Claude, Cursor, Copilot, or any MCP client to:
+- place and manage orders
+- read holdings, positions, and funds
+- fetch market data, candles, OI, Greeks, and movers
+- manage GTT rules
+- estimate charges and margin
 
-## Features
+## Highlights
 
-- **30+ tools** covering orders, portfolio, market data, GTT rules, and more
-- **Auto TOTP** — generates login codes automatically, no manual entry
-- **Lazy authentication** — logs in on first API call, refreshes tokens proactively
-- **Safety guards** — two-tier soft/hard limits on order quantity and value to prevent fat-finger trades
-- **Zero SDK dependency** — direct `fetch()` calls to Angel One REST API
-
----
+- Direct `fetch()` integration. No Angel One SDK dependency.
+- Auto TOTP generation from your base32 secret.
+- Lazy login with token refresh in API layer.
+- Safety guard for trading mutations with soft and hard limits.
+- stdio MCP server. Works well with `npx`.
 
 ## Quick Start
 
-> Copy the prompt below and paste it into your AI agent. It will handle the rest.
+### Option A: Use with `npx` (recommended)
 
-```
-Install and configure the Angel One MCP server by following the instructions here:
-https://raw.githubusercontent.com/ameernoufil/angel-one-mcp/main/docs/llm-setup.md
-```
-
----
-
-## Manual Setup
-
-### Prerequisites
-
-- Node.js 18+ (use `nvm use` if you have [nvm](https://github.com/nvm-sh/nvm))
-- Angel One trading account
-- SmartAPI key from [smartapi.angelone.in](https://smartapi.angelone.in/)
-- TOTP authenticator set up on your Angel One account
-
-### Option A: Install via npm (Recommended)
-
-Install globally and create a config directory:
-
-```bash
-npm install -g angel-one-mcp
-mkdir -p ~/.config/angel-one-mcp
-cat > ~/.config/angel-one-mcp/.env << 'EOF'
-ANGEL_API_KEY=your_smartapi_key
-ANGEL_CLIENT_ID=your_client_id
-ANGEL_PASSWORD=your_mpin
-ANGEL_TOTP_SECRET=your_base32_totp_secret
-EOF
-```
-
-Then add to your MCP client config:
+Add this to your MCP client config:
 
 ```json
 {
@@ -71,64 +43,95 @@ Then add to your MCP client config:
 }
 ```
 
-### Option B: Clone from source
+### Option B: Run from source
 
 ```bash
 git clone https://github.com/ameernoufil/angel-one-mcp.git
 cd angel-one-mcp
 npm install
 cp .env.example .env
-```
-
-Edit `.env` with your credentials, then build and run:
-
-```bash
 npm run build
 npm start
 ```
 
-Add to MCP client config (use absolute path to `build/index.js`):
+If running from source, point your MCP client to `build/index.js`.
 
-```json
-{
-  "mcpServers": {
-    "angel-one": {
-      "type": "stdio",
-      "command": "node",
-      "args": ["/absolute/path/to/angel-one-mcp/build/index.js"],
-      "env": {
-        "ANGEL_API_KEY": "your_smartapi_key",
-        "ANGEL_CLIENT_ID": "your_client_id",
-        "ANGEL_PASSWORD": "your_mpin",
-        "ANGEL_TOTP_SECRET": "your_base32_totp_secret"
-      }
-    }
-  }
-}
+## Environment Variables
+
+Required:
+- `ANGEL_API_KEY`
+- `ANGEL_CLIENT_ID`
+- `ANGEL_PASSWORD`
+- `ANGEL_TOTP_SECRET`
+
+Optional safety limits:
+- `SOFT_MAX_ORDER_QTY` default `25`
+- `HARD_MAX_ORDER_QTY` default `100`
+- `SOFT_MAX_ORDER_VALUE` default `10000`
+- `HARD_MAX_ORDER_VALUE` default `100000`
+
+Example `.env`:
+
+```env
+ANGEL_API_KEY=your_smartapi_key
+ANGEL_CLIENT_ID=your_client_id
+ANGEL_PASSWORD=your_mpin
+ANGEL_TOTP_SECRET=your_base32_totp_secret
 ```
 
-Or if using `.env`, omit the `env` block — the server loads `.env` automatically.
+## Safety Model
 
-### Safety Limits Configuration
+Trading mutations are guarded.
 
-**Soft limits** (bypassable with `force: true`):
+Soft limits block by default and can be overridden with `force: true`.
+Hard limits cannot be bypassed without changing env vars and restarting the server.
 
-- Max order quantity: 25 (`SOFT_MAX_ORDER_QTY`)
-- Max order value: ₹10,000 (`SOFT_MAX_ORDER_VALUE`)
+Guarded operations include:
+- `place_order`
+- `modify_order`
+- `create_gtt_rule`
+- `modify_gtt_rule`
+- `convert_position`
 
-**Hard limits** (env var change + restart):
+For MARKET orders, the server attempts LTP-based value checks before allowing the request.
 
-- Max order quantity: 100 (`HARD_MAX_ORDER_QTY`)
-- Max order value: ₹1,00,000 (`HARD_MAX_ORDER_VALUE`)
+## Tool Coverage
 
-### Development
+- **Auth:** login and logout
+- **Portfolio:** holdings, positions, funds, conversion
+- **Orders:** place, modify, cancel, book lookup, trade lookup
+- **Market:** search, LTP, quotes, candles, OI, Greeks, movers, PCR
+- **GTT:** create, modify, cancel, list, inspect
+- **Calculator:** margin and brokerage estimates
+- **User:** profile
+
+For an agent-focused onboarding prompt, see [`docs/llm-setup.md`](docs/llm-setup.md).
+
+## Development
+
+Requirements:
+- Node.js 18+
+
+Commands:
 
 ```bash
-npm run dev        # Watch mode
-npm run lint       # ESLint
-npm run lint:fix   # ESLint with auto-fix
-npm run format     # Prettier
+npm install
+npm run build
+npm run lint
+npm run lint:fix
+npm run format
+npm run dev
+npm start
 ```
+
+## Architecture Notes
+
+- Entry point: `src/index.ts`
+- API client and auth flow: `src/api.ts`
+- Config and safety limits: `src/config.ts`
+- Order guard: `src/guards.ts`
+- Tool registration: `src/tools/index.ts`
+- Tool implementations: `src/tools/*.ts`
 
 ## License
 

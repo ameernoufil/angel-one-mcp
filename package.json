@@ -1,6 +1,6 @@
 {
   "name": "angel-one-mcp",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "MCP server for Angel One SmartAPI — trade stocks, track portfolio, analyze markets & manage orders via LLM clients like Claude, Cursor & Copilot",
   "type": "module",
   "bin": {
