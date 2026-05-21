@@ -77,13 +77,20 @@ Environment variables are required in `.env` or process environment.
 Publishing is automated via GitHub Actions with npm Trusted Publishing (OIDC). Push a SemVer tag to trigger:
 
 ```bash
-git tag v1.0.5
-git push origin v1.0.5
+git tag v1.0.6
+git push origin v1.0.6
 ```
 
 No manual `npm publish` or `NPM_TOKEN` needed.
 
 See `.github/workflows/publish.yml` for workflow details.
+
+## Changelog
+
+### v1.0.6
+- SEO: expanded keywords from 6 to 25 for npm/GitHub discoverability (mcp, trading, stock-market, india, nse, bse, claude, cursor, copilot, nifty, sensex, portfolio, ai-trading, etc.)
+- SEO: enriched package description with LLM client names and key features
+- Added GitHub topics for repo discoverability
 
 ## Environment Variables
 
