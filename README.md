@@ -1,6 +1,7 @@
 # Angel One MCP Server
 
 [![npm](https://img.shields.io/npm/v/angel-one-mcp)](https://www.npmjs.com/package/angel-one-mcp)
+[![MCP Registry](https://img.shields.io/badge/MCP%20Registry-official-blue)](https://registry.modelcontextprotocol.io/)
 
 TypeScript [Model Context Protocol](https://modelcontextprotocol.io) server for [Angel One SmartAPI](https://smartapi.angelone.in/).
 
@@ -18,6 +19,15 @@ Use it from Claude, Cursor, Copilot, or any MCP client to:
 - Lazy login with token refresh in API layer.
 - Safety guard for trading mutations with soft and hard limits.
 - stdio MCP server. Works well with `npx`.
+
+## Discoverability
+
+- npm package: [`angel-one-mcp`](https://www.npmjs.com/package/angel-one-mcp)
+- Official MCP Registry: [`io.github.ameernoufil/angel-one`](https://registry.modelcontextprotocol.io/)
+- GitHub repo: [`ameernoufil/angel-one-mcp`](https://github.com/ameernoufil/angel-one-mcp)
+
+If your client supports registry-based discovery, search for `io.github.ameernoufil/angel-one`.
+If your client prefers package installs, use `angel-one-mcp` from npm.
 
 ## Quick Start
 
