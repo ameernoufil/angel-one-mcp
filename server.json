@@ -7,12 +7,12 @@
     "url": "https://github.com/ameernoufil/angel-one-mcp",
     "source": "github"
   },
-  "version": "1.0.9",
+  "version": "1.0.10",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "angel-one-mcp",
-      "version": "1.0.9",
+      "version": "1.0.10",
       "transport": {
         "type": "stdio"
       },
