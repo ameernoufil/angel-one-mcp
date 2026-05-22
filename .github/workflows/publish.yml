@@ -1,4 +1,4 @@
-name: publish to npm
+name: publish package and mcp registry
 
 on:
   push:
@@ -27,5 +27,15 @@ jobs:
       - name: build
         run: npm run build
 
-      - name: publish
+      - name: publish npm package
         run: npm publish --provenance --access public
+
+      - name: install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: authenticate to mcp registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: publish mcp server metadata
+        run: ./mcp-publisher publish
