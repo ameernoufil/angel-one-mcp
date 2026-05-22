@@ -14,21 +14,52 @@ export interface Credentials {
 
 export interface Config extends Credentials, SafetyConfig {}
 
-export function loadConfig(): Config {
-  const apiKey = process.env.ANGEL_API_KEY;
-  const clientId = process.env.ANGEL_CLIENT_ID;
-  const password = process.env.ANGEL_PASSWORD;
-  const totpSecret = process.env.ANGEL_TOTP_SECRET;
+export const REQUIRED_ENV_VARS = [
+  "ANGEL_API_KEY",
+  "ANGEL_CLIENT_ID",
+  "ANGEL_PASSWORD",
+  "ANGEL_TOTP_SECRET",
+] as const;
 
-  if (!apiKey || !clientId || !password || !totpSecret) {
-    const missing = [
-      !apiKey && "ANGEL_API_KEY",
-      !clientId && "ANGEL_CLIENT_ID",
-      !password && "ANGEL_PASSWORD",
-      !totpSecret && "ANGEL_TOTP_SECRET",
-    ].filter(Boolean);
-    throw new Error(`Missing required env vars: ${missing.join(", ")}`);
+export class ConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConfigError";
   }
+}
+
+function formatMissingEnvMessage(missing: readonly string[]): string {
+  return [
+    "Missing required environment variables:",
+    ...missing.map((name) => `- ${name}`),
+    "",
+    "Set them in your MCP client config or a local .env file before starting the server.",
+    "Example:",
+    "ANGEL_API_KEY=your_smartapi_key",
+    "ANGEL_CLIENT_ID=your_client_id",
+    "ANGEL_PASSWORD=your_mpin",
+    "ANGEL_TOTP_SECRET=your_base32_totp_secret",
+  ].join("\n");
+}
+
+function requireEnv(name: (typeof REQUIRED_ENV_VARS)[number]): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new ConfigError(formatMissingEnvMessage([name]));
+  }
+  return value;
+}
+
+export function loadConfig(): Config {
+  const missing = REQUIRED_ENV_VARS.filter((name) => !process.env[name]);
+  if (missing.length > 0) {
+    throw new ConfigError(formatMissingEnvMessage(missing));
+  }
+
+  const apiKey = requireEnv("ANGEL_API_KEY");
+  const clientId = requireEnv("ANGEL_CLIENT_ID");
+  const password = requireEnv("ANGEL_PASSWORD");
+  const totpSecret = requireEnv("ANGEL_TOTP_SECRET");
 
   const parseIntSafe = (name: string, val: string | undefined, fallback: number): number => {
     if (!val) return fallback;
@@ -62,12 +93,12 @@ export function loadConfig(): Config {
   };
 
   if (config.softMaxOrderQty > config.hardMaxOrderQty) {
-    throw new Error(
+    throw new ConfigError(
       `SOFT_MAX_ORDER_QTY (${config.softMaxOrderQty}) must be ≤ HARD_MAX_ORDER_QTY (${config.hardMaxOrderQty})`,
     );
   }
   if (config.softMaxOrderValue > config.hardMaxOrderValue) {
-    throw new Error(
+    throw new ConfigError(
       `SOFT_MAX_ORDER_VALUE (${config.softMaxOrderValue}) must be ≤ HARD_MAX_ORDER_VALUE (${config.hardMaxOrderValue})`,
     );
   }
